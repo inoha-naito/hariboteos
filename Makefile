@@ -1,3 +1,6 @@
+default:
+	make img
+
 ipl.bin: ipl.nas Makefile
 	nasm ipl.nas -o ipl.bin -l ipl.lst
 
@@ -13,3 +16,13 @@ img:
 run:
 	make img
 	qemu-system-i386 -drive file=helloos.img,format=raw,if=floppy
+
+clean:
+	rm -f ipl.bin
+	rm -f ipl.lst
+	rm -f tail.bin
+	rm -f tail.lst
+
+src_only:
+	make clean
+	rm -f helloos.img
