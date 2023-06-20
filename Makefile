@@ -1,28 +1,31 @@
+MAKE = make -r
+DEL = rm -f
+
 default:
-	make img
+	$(MAKE) img
 
 ipl.bin: ipl.nas Makefile
 	nasm ipl.nas -o ipl.bin -l ipl.lst
 
-helloos.img: ipl.bin Makefile
-	mformat -f 1440 -C -B ipl.bin -i helloos.img ::
+haribote.img: ipl.bin Makefile
+	mformat -f 1440 -C -B ipl.bin -i haribote.img ::
 
 asm:
-	make -r ipl.bin
+	$(MAKE) ipl.bin
 
 img:
-	make -r helloos.img
+	$(MAKE) haribote.img
 
 run:
-	make img
-	qemu-system-i386 -drive file=helloos.img,format=raw,if=floppy
+	$(MAKE) img
+	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy
 
 clean:
-	rm -f ipl.bin
-	rm -f ipl.lst
-	rm -f tail.bin
-	rm -f tail.lst
+	-$(DEL) ipl.bin
+	-$(DEL) ipl.lst
+	-$(DEL) tail.bin
+	-$(DEL) tail.lst
 
 src_only:
-	make clean
-	rm -f helloos.img
+	$(MAKE) clean
+	-$(DEL) haribote.img

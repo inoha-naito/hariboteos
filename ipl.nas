@@ -2,7 +2,7 @@
 
     JMP    entry
     DB    0x90
-    DB    "HELLOIPL"
+    DB    "HARIBOTE"
     DW    512
     DB    1
     DW    1
@@ -17,7 +17,7 @@
     DD    2880
     DB    0, 0, 0x29
     DD    0xffffffff
-    DB    "HELLO-OS   "
+    DB    "HARIBOTEOS "
     DB    "FAT12   "
     TIMES    18    DB    0
 
@@ -26,8 +26,25 @@ entry:
     MOV    SS, AX
     MOV    SP, 0x7c00
     MOV    DS, AX
-    MOV    ES, AX
 
+    MOV    AX, 0x0820
+    MOV    ES, AX
+    MOV    CH, 0
+    MOV    DH, 0
+    MOV    CL, 2
+
+    MOV    AH, 0x02
+    MOV    AL, 1
+    MOV    BX, 0
+    MOV    DL, 0x00
+    INT    0x13
+    JC    error
+
+fin:
+    HLT
+    JMP    fin
+
+error:
     MOV    SI, msg
 
 putloop:
@@ -40,13 +57,9 @@ putloop:
     INT    0x10
     JMP    putloop
 
-fin:
-    HLT
-    JMP    fin
-
 msg:
     DB    0x0a, 0x0a
-    DB    "hello, world"
+    DB    "load error"
     DB    0x0a
     DB    0
 
