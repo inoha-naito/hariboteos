@@ -69,9 +69,7 @@ next:
     CMP    CH, CYLS
     JB    readloop
 
-fin:
-    HLT
-    JMP    fin
+    JMP    0xc200
 
 error:
     MOV    SI, msg
@@ -85,6 +83,10 @@ putloop:
     MOV    BX, 15
     INT    0x10
     JMP    putloop
+
+fin:
+    HLT
+    JMP    fin
 
 msg:
     DB    0x0a, 0x0a
