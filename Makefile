@@ -7,11 +7,12 @@ default:
 ipl.bin: ipl.nas Makefile
 	nasm ipl.nas -o ipl.bin -l ipl.lst
 
-haribote.img: ipl.bin Makefile
-	mformat -f 1440 -C -B ipl.bin -i haribote.img ::
+haribote.sys: haribote.nas Makefile
+	nasm haribote.nas -o haribote.sys -l haribote.lst
 
-asm:
-	$(MAKE) ipl.bin
+haribote.img: ipl.bin haribote.sys Makefile
+	mformat -f 1440 -C -B ipl.bin -i haribote.img ::
+	mcopy -i haribote.img haribote.sys ::
 
 img:
 	$(MAKE) haribote.img
@@ -23,8 +24,8 @@ run:
 clean:
 	-$(DEL) ipl.bin
 	-$(DEL) ipl.lst
-	-$(DEL) tail.bin
-	-$(DEL) tail.lst
+	-$(DEL) haribote.sys
+	-$(DEL) haribote.lst
 
 src_only:
 	$(MAKE) clean
