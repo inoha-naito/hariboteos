@@ -4,14 +4,14 @@ DEL = rm -f
 default:
 	$(MAKE) img
 
-ipl.bin: ipl.nas Makefile
-	nasm ipl.nas -o ipl.bin -l ipl.lst
+ipl10.bin: ipl10.nas Makefile
+	nasm ipl10.nas -o ipl10.bin -l ipl10.lst
 
 haribote.sys: haribote.nas Makefile
 	nasm haribote.nas -o haribote.sys -l haribote.lst
 
-haribote.img: ipl.bin haribote.sys Makefile
-	mformat -f 1440 -C -B ipl.bin -i haribote.img ::
+haribote.img: ipl10.bin haribote.sys Makefile
+	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
 	mcopy -i haribote.img haribote.sys ::
 
 img:
@@ -22,8 +22,8 @@ run:
 	qemu-system-i386 -drive file=haribote.img,format=raw,if=floppy
 
 clean:
-	-$(DEL) ipl.bin
-	-$(DEL) ipl.lst
+	-$(DEL) ipl10.bin
+	-$(DEL) ipl10.lst
 	-$(DEL) haribote.sys
 	-$(DEL) haribote.lst
 
