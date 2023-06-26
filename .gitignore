@@ -4,3 +4,5 @@
 *.o
 *.sys
 *.hrb
+hankaku.c
+convHankakuTxt
