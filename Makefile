@@ -19,8 +19,8 @@ asmhead.bin: asmhead.nas Makefile
 naskfunc.o: naskfunc.nas Makefile
 	nasm -f elf naskfunc.nas -o naskfunc.o -l naskfunc.lst
 
-bootpack.hrb: bootpack.c hrb.ld hankaku.c naskfunc.o Makefile
-	i386-elf-gcc -nostdlib -T hrb.ld bootpack.c hankaku.c naskfunc.o -o bootpack.hrb
+bootpack.hrb: bootpack.c hrb.ld hankaku.c naskfunc.o mysprintf.c Makefile
+	i386-elf-gcc -nostdlib -fno-builtin -T hrb.ld bootpack.c hankaku.c naskfunc.o mysprintf.c -o bootpack.hrb
 
 haribote.sys: asmhead.bin bootpack.hrb Makefile
 	cat asmhead.bin bootpack.hrb > haribote.sys
