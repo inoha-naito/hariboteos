@@ -1,48 +1,40 @@
+OBJS_BOOTPACK = bootpack.o graphic.o dsctbl.o naskfunc.o hankaku.o mysprintf.o
+
 MAKE = make -r
 DEL = rm -f
+
+CC = i386-elf-gcc
 
 default:
 	$(MAKE) img
 
 convHankakuTxt: convHankakuTxt.c
-	gcc convHankakuTxt.c -o convHankakuTxt
+	gcc $< -o $@
 
 hankaku.c: hankaku.txt convHankakuTxt
 	./convHankakuTxt
 
-hankaku.o: hankaku.c
-	i386-elf-gcc -c hankaku.c -o hankaku.o
+ipl10.bin: ipl10.nas
+	nasm $< -o $@ -l ipl10.lst
 
-mysprintf.o: mysprintf.c
-	i386-elf-gcc -c -fno-builtin mysprintf.c -o mysprintf.o
+asmhead.bin: asmhead.nas
+	nasm $< -o $@ -l asmhead.lst
 
-ipl10.bin: ipl10.nas Makefile
-	nasm ipl10.nas -o ipl10.bin -l ipl10.lst
+naskfunc.o: naskfunc.nas
+	nasm -f elf $< -o $@ -l naskfunc.lst
 
-asmhead.bin: asmhead.nas Makefile
-	nasm asmhead.nas -o asmhead.bin -l asmhead.lst
+bootpack.hrb: hrb.ld $(OBJS_BOOTPACK)
+	$(CC) -nostdlib -T $< $(OBJS_BOOTPACK) -o $@
 
-naskfunc.o: naskfunc.nas Makefile
-	nasm -f elf naskfunc.nas -o naskfunc.o -l naskfunc.lst
+haribote.sys: asmhead.bin bootpack.hrb
+	cat $^ > $@
 
-bootpack.o: bootpack.c
-	i386-elf-gcc -c -fno-builtin bootpack.c -o bootpack.o
+haribote.img: ipl10.bin haribote.sys
+	mformat -f 1440 -C -B $< -i $@ ::
+	mcopy -i $@ haribote.sys ::
 
-graphic.o: graphic.c
-	i386-elf-gcc -c graphic.c -o graphic.o
-
-dsctbl.o: dsctbl.c
-	i386-elf-gcc -c dsctbl.c -o dsctbl.o
-
-bootpack.hrb: bootpack.o graphic.o dsctbl.o naskfunc.o hankaku.o mysprintf.o hrb.ld Makefile
-	i386-elf-gcc -nostdlib -T hrb.ld bootpack.o graphic.o dsctbl.o naskfunc.o hankaku.o mysprintf.o -o bootpack.hrb
-
-haribote.sys: asmhead.bin bootpack.hrb Makefile
-	cat asmhead.bin bootpack.hrb > haribote.sys
-
-haribote.img: ipl10.bin haribote.sys Makefile
-	mformat -f 1440 -C -B ipl10.bin -i haribote.img ::
-	mcopy -i haribote.img haribote.sys ::
+%.o: %.c
+	$(CC) -fno-builtin -c $*.c -o $*.o
 
 img:
 	$(MAKE) haribote.img
